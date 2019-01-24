@@ -1,0 +1,57 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.patches as mpatches
+
+#background image
+img = plt.imread("mapbw.png")
+
+w = 360
+h = 30
+d = 10
+
+
+#Colors for each Country
+UnitedStates = '#0000ff'
+Canada = '#ffa500'
+Denmark = '#550055'
+Norway = '#00aa00'
+Sweden = '#ff00ff'
+Finland = '#ff0000'
+Russia = '#009999'
+
+#Each unique country and their color - used in the legend
+uniqueCountries = ['United States', 'Canada', 'Denmark', 'Norway', 'Sweden', 'Finland', 'Russia']
+countryColors = [UnitedStates, Canada, Denmark, Norway, Sweden, Finland, Russia]
+
+#Lattitude, Longitue, Population, Name, and Country for each city - Taken from Wikipedia
+lat = [78.13,72.47,71.39,71.32,71.18,70.59,70.40,70.05,69.58,69.54,69.43,69.41,69.20,68.58,68.47,68.25,68.21,67.51,67.33,67.18,67.08]
+long = [15.39,-56.09	,128.52,52.19	,-156.46,25.59	,23.41	,29.44	,23.16	,27.01	,30.02	,18.57	,88.13	,33.05	,16.32	,17.34	,-133.43,20.13,133.23,14.33	,20.40]
+pop = [2144,1065,5063,1972,4212,2484,8052,5064,15094,1245,3566,64448,175365,307257,20953,18756,3243,18148,1311,51022,8449]
+names = ['Longyearbyen','Upernavik','Tiksi','Belushya Guba','Utqiagvik','Honningsvag','Hammerfest','Vadso','Alta','Utsjoki','Kirkenes','Tromso','Norilsk','Murmansk','Harstad','Narvik','Inuvik','Kiruna','Verkhoyansk','Bodo','Gallivare']
+countries = [Norway,Denmark,Russia,Russia,UnitedStates,Norway,Norway,Norway,Norway,Finland,Norway,Norway,Russia,Russia,Norway,Norway,Canada,Sweden,Russia,Norway,Sweden]
+
+#Compress the population size difference between cities and enlarge them
+dispPop = []
+for city in pop:
+    dispPop.append(np.power(np.log10(city), 7)*0.9)
+
+# Legend
+recs = []
+for i in range(0,len(countryColors)):
+    recs.append(mpatches.Rectangle((0,0),1,1,fc=countryColors[i]))
+plt.legend(recs,uniqueCountries,loc=2, prop={'size': 50}, edgecolor='Black')
+
+fig = plt.figure(figsize=(w, h), dpi=d)
+
+plt.axis([-180, 180, 60, 90])
+plt.scatter(long, lat, s=dispPop, alpha=0.85, c=countries)
+
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.title("Cities in the Arctic Circle"+"\n"+"Population > 1000")
+plt.legend(recs,uniqueCountries,loc=2, prop={'size': 100}, edgecolor='Black')
+plt.grid(False)
+plt.imshow(img, extent=[-180, 180, 45, 90])
+
+#plt.show()
+plt.savefig("ArcticLinear.png")

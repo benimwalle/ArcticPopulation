@@ -1,0 +1,91 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.patches as mpatches
+
+w = 60
+h = 60
+d = 50
+
+pi = np.pi
+
+
+#background image
+img = plt.imread("fun.png")
+
+#Colors for each Country
+UnitedStates = '#0000ff'
+Canada = '#ffa500'
+Denmark = '#550055'
+Norway = '#00aa00'
+Sweden = '#ff00ff'
+Finland = '#ff0000'
+Russia = '#009999'
+
+
+#Lattitude, Longitue, Population, Name, and Country for each city - Taken from Wikipedia
+lat = [78.13,72.47,71.39,72.00,71.18,70.59,70.40,70.05,69.58,69.54,69.43,69.41,69.20,68.58,68.47,68.25,68.21,67.51,67.33,67.18,67.08]
+long = [15.39,-56.09,128.52,52.19,-156.46,25.59,23.41,29.44,23.16,27.01,30.02,18.57,88.13,33.05,16.32	,17.34	,-133.43,20.13,133.23,14.33	,20.40]
+pop = [2144,1065,5063,1972,4212,2484,8052,5064,15094,1245,3566,64448,175365,307257,20953,18756,3243,18148,1311,51022,8449]
+names = ['Longyearbyen','Upernavik','Tiksi','Belushya Guba','Utqiagvik','Honningsvag','Hammerfest','Vadso','Alta','Utsjoki','Kirkenes','Tromso','Norilsk','Murmansk','Harstad','Narvik','Inuvik','Kiruna','Verkhoyansk','Bodo','Gallivare']
+countries = [Norway,Denmark,Russia,Russia,UnitedStates,Norway,Norway,Norway,Norway,Finland,Norway,Norway,Russia,Russia,Norway,Norway,Canada,Sweden,Russia,Norway,Sweden]
+
+#Each unique country and their color - used in the legend
+uniqueCountries = ['United States', 'Canada', 'Denmark', 'Norway', 'Sweden', 'Finland', 'Russia']
+countryColors = [UnitedStates, Canada, Denmark, Norway, Sweden, Finland, Russia]
+
+
+test_lat = [0.25, 0.5, 1]
+test_long = [0, .5*pi, -pi]
+size = [100, 1000, 10000]
+test_color = [0,5,10]
+
+#Compress the population size difference between cities and enlarge them
+dispPop = []
+for city in pop:
+    dispPop.append(np.power(np.log10(city), 7)*0.6)
+
+#Longitude is in degrees - convert it to radians.
+long_rad = []
+for city in long:
+    long_rad.append(((city*pi)/180)-(.5*pi))
+
+#Convert lattitude to an r value between zero and one
+lat_rad = []
+for city in lat:
+    lat_rad.append(((city - 90) * -1) / 30)
+
+
+fig = plt.figure(figsize=(w, h), dpi=d)
+
+plt.title("Cities in the Arctic Circle"+"\n"+"Population > 1000")
+plt.grid(False)
+
+# ax = fig.add_subplot(111, projection='polar')
+
+# add axes for the image
+ax_image = fig.add_axes([0,0,1,1], label="image", frame_on='false', xticks =[],yticks=[])
+ax_image.imshow(img, alpha=0.9)
+
+# Add axes for the polar plot
+ax = fig.add_axes([0,0,1,1], projection='polar', label="polar", facecolor='none', frame_on = 'false', xticks = [], yticks=[])
+c = ax.scatter(long_rad, lat_rad, s=dispPop, alpha=0.85, c=countries, edgecolor='Black')
+
+# Get rid of the x and y tick labels
+ax.axes.xaxis.set_ticklabels([])
+ax.axes.yaxis.set_ticklabels([])
+
+# Legend stuff
+recs = []
+for i in range(0,len(countryColors)):
+    recs.append(mpatches.Rectangle((0,0),1,1,fc=countryColors[i]))
+plt.legend(recs,uniqueCountries,loc=2, prop={'size': 50}, edgecolor='Black')
+plt.text(.9, .0, "Cities in the Arctic Circle"+"\n"+"Population > 1000", size=70, rotation=0.,
+         ha="center", va="center",
+         bbox=dict(boxstyle="round",
+                   ec=(1., 0.5, 0.5),
+                   fc=(1., 0.8, 0.8),
+                   )
+         )
+
+# plt.show()
+plt.savefig("ArcticRadial.png")
